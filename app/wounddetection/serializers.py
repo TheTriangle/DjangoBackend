@@ -3,6 +3,33 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
+from .models import Wound
+
+
+class WoundSerializer(serializers.Serializer):
+    depth = serializers.CharField(
+        label="Depth"
+    )
+    category = serializers.CharField(
+        label="Category"
+    )
+    type = serializers.CharField(
+        label="Type"
+    )
+    area = serializers.CharField(
+        label="Area"
+    )
+    diameter = serializers.CharField(
+        label="Diameter"
+    )
+    additional = serializers.CharField(
+        label="Additional"
+    )
+    image_url = serializers.ImageField(required=False)
+
+    class Meta:
+        model = Wound
+        fields = ['id', 'depth', 'category', 'type', 'area', 'diameter', 'additional', 'image_url']
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

@@ -6,6 +6,16 @@ from rest_framework import views
 from rest_framework.response import Response
 
 from . import serializers
+from .models import Wound
+
+class WoundUploadView(generics.ListCreateAPIView):
+    queryset = Wound.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class ProfileView(generics.RetrieveAPIView):
