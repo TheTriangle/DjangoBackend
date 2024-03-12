@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_registration',
+    'rest_framework.authtoken',
     'wounddetection',
 ]
 
@@ -86,6 +87,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -96,6 +98,8 @@ REST_REGISTRATION = {
     'REGISTER_VERIFICATION_ENABLED': False,
     'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
     'RESET_PASSWORD_VERIFICATION_ENABLED': False,
+    'LOGIN_AUTHENTICATE_SESSION': True,
+    'LOGIN_RETRIEVE_TOKEN': True,
 }
 
 # Password validation

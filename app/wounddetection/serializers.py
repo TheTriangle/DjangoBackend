@@ -3,33 +3,54 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import Wound
+from .models import WoundReport, Case, Patient, Doctor
 
 
-class WoundSerializer(serializers.Serializer):
+class WoundReportSerializer(serializers.Serializer):
     depth = serializers.CharField(
-        label="Depth"
+        label="depth"
     )
     category = serializers.CharField(
-        label="Category"
+        label="woundClass"
     )
     type = serializers.CharField(
-        label="Type"
+        label="type"
     )
     area = serializers.CharField(
-        label="Area"
+        label="area"
     )
     diameter = serializers.CharField(
-        label="Diameter"
+        label="diameter"
     )
     additional = serializers.CharField(
-        label="Additional"
+        label="additional"
     )
     image_url = serializers.ImageField(required=False)
 
     class Meta:
-        model = Wound
+        model = WoundReport
         fields = ['id', 'depth', 'category', 'type', 'area', 'diameter', 'additional', 'image_url']
+
+
+class CaseSerializer(serializers.ModelSerializer):
+    reports = WoundReportSerializer(many=True)
+
+    class Meta:
+        model = Case
+        fields = ['id', 'doctor', 'reports']
+
+class PatientSerializer(serializers.ModelSerializer):
+    cases = CaseSerializer(many=True)
+
+    class Meta:
+        model = Patient
+        fields = ['id', 'name', 'mail', 'cases']
+
+class DoctorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Doctor
+        fields = '__all__'
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,7 +61,6 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
         ]
-
 
 class LoginSerializer(serializers.Serializer):
     """
