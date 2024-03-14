@@ -18,6 +18,7 @@ class Specialization(models.Model):
 
 class Doctor(models.Model):
    email = models.CharField(max_length=30)
+   name = models.CharField(max_length=30)
    specialization = models.ForeignKey(Specialization, on_delete=models.CASCADE)
 
 
@@ -36,6 +37,8 @@ class Case(models.Model):
    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
    reports = models.ManyToManyField(WoundReport)
 
+
+WoundReport.case = models.ForeignKey(Case)
 Patient.cases = models.ManyToManyField(Case)
 
 
