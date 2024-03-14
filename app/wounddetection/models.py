@@ -22,7 +22,7 @@ class Doctor(models.Model):
 
 
 class WoundReport(models.Model):
-   upload_date = models.DateTimeField()
+   upload_date = models.DateTimeField(null=True)
    depth = models.CharField(max_length=30)
    category = models.CharField(max_length=30)
    type = models.CharField(max_length=30)

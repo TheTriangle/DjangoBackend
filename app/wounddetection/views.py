@@ -13,6 +13,7 @@ from .serializers import PatientSerializer
 
 class WoundUploadView(generics.ListCreateAPIView):
     serializer_class = serializers.WoundReportSerializer
+    queryset = WoundReport.objects.all()
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)

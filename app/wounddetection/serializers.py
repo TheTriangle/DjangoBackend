@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from .models import WoundReport, Case, Patient, Doctor
 
 
-class WoundReportSerializer(serializers.Serializer):
+class WoundReportSerializer(serializers.ModelSerializer):
     depth = serializers.CharField(
         label="depth"
     )
@@ -62,7 +62,7 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name',
         ]
 
-class LoginSerializer(serializers.Serializer):
+class LoginSerializer(serializers.ModelSerializer):
     """
     This serializer defines two fields for authentication:
       * username
