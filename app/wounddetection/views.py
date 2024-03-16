@@ -7,8 +7,18 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from . import serializers
-from .models import WoundReport, Patient
+from .models import WoundReport, Patient, Case
 from .serializers import PatientSerializer
+
+
+class CasesView(generics.ListCreateAPIView):
+    serializer_class = serializers.CaseSerializer
+    queryset = Case.objects.all()
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class WoundUploadView(generics.ListCreateAPIView):
