@@ -33,18 +33,18 @@ class WoundReportSerializer(serializers.ModelSerializer):
 
 
 class CaseSerializer(serializers.ModelSerializer):
-    reports = WoundReportSerializer(many=True)
+    reports = WoundReportSerializer(read_only=True, many=True)
 
     class Meta:
         model = Case
         fields = ['id', 'doctor', 'reports']
 
 class PatientSerializer(serializers.ModelSerializer):
-    cases = CaseSerializer(many=True)
+    cases = CaseSerializer(read_only=True, many=True)
 
     class Meta:
         model = Patient
-        fields = ['id', 'name', 'mail', 'cases']
+        fields = ['cases', 'id', 'name', 'mail']
 
 class DoctorSerializer(serializers.ModelSerializer):
     class Meta:

@@ -19,7 +19,7 @@ class Specialization(models.Model):
 class Doctor(models.Model):
    email = models.CharField(max_length=30)
    name = models.CharField(max_length=30)
-   specialization = models.ForeignKey(Specialization, on_delete=models.CASCADE)
+   specialization = models.CharField(max_length=30) #TODO replace with Specialization mdel
 
 
 class WoundReport(models.Model):
