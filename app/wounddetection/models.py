@@ -38,7 +38,7 @@ class Case(models.Model):
    reports = models.ManyToManyField(WoundReport)
 
 
-WoundReport.case = models.ForeignKey(Case)
+WoundReport.case = models.ForeignKey(Case, on_delete=models.CASCADE)
 Patient.cases = models.ManyToManyField(Case)
 
 
