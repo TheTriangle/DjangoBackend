@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 
 from . import serializers
 from .models import WoundReport, Patient, Case, Doctor
-from .serializers import PatientSerializer, DoctorSerializer
+from .serializers import PatientSerializer, DoctorSerializer, CaseSerializer, WoundReportSerializer
 
 
 class CasesView(generics.ListCreateAPIView):
@@ -36,19 +36,37 @@ class WoundUploadView(generics.ListCreateAPIView):
 class PatientView(generics.CreateAPIView):
     serializer_class = PatientSerializer
     queryset = Patient.objects.all()
-    def get_serializer(self, *args, **kwargs):
-        serializer_class = self.get_serializer_class()
-        kwargs["context"] = self.get_serializer_context()
 
-        # Check if a pk was passed through the url.
-        if 'pk' in self.kwargs:
-            modified_data = self.request.data.copy()
-            modified_data['school'] = self.kwargs.get('pk')
-            kwargs["data"] = modified_data
-            return serializer_class(*args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        # Deserialize the request data for patient
+        patient_serializer = self.get_serializer(data=request.data)
+        patient_serializer.is_valid(raise_exception=True)
 
-        # If not mind, move on.
-        return serializer_class(*args, **kwargs)
+        # Create patient instance
+        patient_instance = Patient.objects.create(name=patient_serializer.validated_data['name'],
+                                                   mail=patient_serializer.validated_data['mail'])
+
+        # Deserialize the request data for cases
+        case_serializer = CaseSerializer(data=request.data.get('cases', []), many=True)
+        case_serializer.is_valid(raise_exception=True)
+
+        # Create case instances and associate with patient
+        for case_data in case_serializer.validated_data:
+            # Extract reports data from case_data
+            reports_data = case_data.pop('reports', [])
+
+            # Create the case instance
+            case_instance = Case.objects.create(patient=patient_instance, **case_data)
+
+            # Associate reports with the case using set() method
+            woundsSerializer = WoundReportSerializer(data=reports_data, many=True)
+            woundsSerializer.is_valid(raise_exception=True)
+            wound_instance = WoundReport.objects.create(**woundsSerializer.validated_data, many=True)
+            case_instance.reports.set(wound_instance)
+
+        # Serialize the patient instance and return the response
+        patient_serializer = self.get_serializer(patient_instance)
+        return Response(patient_serializer.data, status=status.HTTP_201_CREATED)
 
 
 class DoctorView(APIView):
