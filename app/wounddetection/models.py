@@ -7,12 +7,6 @@ from django.db import models
 def upload_to(instance, filename):
     return 'images/{filename}'.format(filename=filename)
 
-class Patient(models.Model):
-   name = models.CharField(max_length=30)
-   mail = models.CharField(max_length=30)
-   def __str__(self):
-      return self.name
-
 class Specialization(models.Model):
    name = models.CharField(max_length=30)
 
@@ -33,12 +27,13 @@ class WoundReport(models.Model):
    image_url = models.ImageField(upload_to=upload_to, blank=True, null=True)
 
 class Case(models.Model):
-   patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
    reports = models.ManyToManyField(WoundReport)
 
 
-WoundReport.case = models.ForeignKey(Case, on_delete=models.CASCADE)
-Patient.cases = models.ManyToManyField(Case)
-
-
+class Patient(models.Model):
+   name = models.CharField(max_length=30)
+   mail = models.CharField(max_length=30)
+   cases = models.ManyToManyField(Case)
+   def __str__(self):
+      return self.name
