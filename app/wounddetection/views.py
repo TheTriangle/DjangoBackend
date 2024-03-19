@@ -14,6 +14,16 @@ from .serializers import PatientSerializer, DoctorSerializer
 class CasesView(generics.ListCreateAPIView):
     serializer_class = serializers.CaseSerializer
     queryset = Case.objects.all()
+
+    def perform_create(self, serializer):
+        case = serializer.save()
+
+        patient_id = self.request.data.get('patient')
+
+        patient = Patient.objects.get(id=patient_id)
+
+        patient.cases.add(case)
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -25,6 +35,17 @@ class WoundUploadView(generics.ListCreateAPIView):
 
     serializer_class = serializers.WoundReportSerializer
     queryset = WoundReport.objects.all()
+
+    def perform_create(self, serializer):
+        report = serializer.save()
+
+        case_id = self.request.data.get('case')
+
+        # Затем находим пациента по ID
+        case = Case.objects.get(id=case_id)
+
+        # Добавляем созданный случай к связанным случаям пациента
+        case.reports.add(report)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
