@@ -1,3 +1,4 @@
 /.idea/
 /venv/
-/app/db.sqlite3
+/app/db.
+/app/wounddetection/model/model.pkl

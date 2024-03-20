@@ -1,12 +1,13 @@
 from django.contrib.auth import login
-from django.shortcuts import render
+from pathlib import Path
 
-from rest_framework import permissions, status, generics, viewsets
+from rest_framework import permissions, status, generics
 from rest_framework import views
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from . import serializers
+from .model.model import Model
 from .models import WoundReport, Patient, Case, Doctor
 from .serializers import PatientSerializer, DoctorSerializer
 
@@ -31,6 +32,10 @@ class CasesView(generics.ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+net = Model()
+net.load_model(Path(__file__).parent / r"model/model.pkl")
+
+
 class WoundUploadView(generics.ListCreateAPIView):
 
     serializer_class = serializers.WoundReportSerializer
@@ -48,10 +53,19 @@ class WoundUploadView(generics.ListCreateAPIView):
         case.reports.add(report)
 
     def create(self, request, *args, **kwargs):
+        print(request.data)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        image_url = serializer.data["image_url"]
+        path = str(str(Path(__file__).parent) + "\\..\\..\\mediafiles\\" + image_url[image_url.find("images"):])
+        stage = net.predict(path)
+        serializer.instance.additional = "Stage: " + str(stage)
+        serializer.instance.save()
+        ans = serializer.data
+        ans["additional"] = "Stage: " + str(stage)
+        return Response(ans, status=status.HTTP_201_CREATED)
 
 
 class PatientView(generics.CreateAPIView):
