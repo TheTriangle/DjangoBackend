@@ -12,7 +12,7 @@ from .serializers import PatientSerializer, DoctorSerializer
 
 
 class CasesView(generics.ListCreateAPIView):
-    serializer_class = serializers.CaseSerializer
+    serializer_class = serializers.CasePostSerializer
     queryset = Case.objects.all()
 
     def perform_create(self, serializer):
@@ -61,11 +61,11 @@ class PatientView(generics.CreateAPIView):
 
     def get(self, request, pk):
         try:
-            doctor = Patient.objects.get(pk=pk)
+            patient = Patient.objects.get(pk=pk)
         except Patient.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = PatientSerializer(doctor)
+        serializer = PatientSerializer(patient)
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):

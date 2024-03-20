@@ -25,19 +25,35 @@ class WoundReportSerializer(serializers.ModelSerializer):
     additional = serializers.CharField(
         label="additional"
     )
-    image_url = serializers.ImageField(required=False)
+    image_url = serializers.ImageField(required=False, use_url=True)
 
     class Meta:
         model = WoundReport
         fields = ['id', 'depth', 'category', 'type', 'area', 'diameter', 'additional', 'image_url']
 
 
+class DoctorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Doctor
+        fields = '__all__'
+
+
 class CaseSerializer(serializers.ModelSerializer):
-    reports = WoundReportSerializer(many=True)
+    reports = WoundReportSerializer(many=True, read_only=True)
+    doctor = DoctorSerializer()
 
     class Meta:
         model = Case
         fields = ['id', 'doctor', 'reports']
+
+
+class CasePostSerializer(serializers.ModelSerializer):
+    reports = WoundReportSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Case
+        fields = ['id', 'doctor', 'reports']
+
 
 class PatientSerializer(serializers.ModelSerializer):
     cases = CaseSerializer(many=True)
@@ -45,11 +61,6 @@ class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient
         fields = ['cases', 'id', 'name', 'mail']
-
-class DoctorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Doctor
-        fields = '__all__'
 
 
 class UserSerializer(serializers.ModelSerializer):
