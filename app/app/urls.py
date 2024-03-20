@@ -26,6 +26,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', views.LoginView.as_view()),
     path('profile/', views.ProfileView.as_view()),
+    path('patient/<int:pk>/', views.PatientView.as_view(), name='patient-detail'),
+    path('doctor/<int:pk>/', views.DoctorView.as_view(), name='doctor-detail'),
     path('wounds/', views.WoundUploadView.as_view()),
     path('cases/', views.CasesView.as_view()),
     path('accounts/', include('rest_registration.api.urls'))

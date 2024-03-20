@@ -1,2 +1,4 @@
 /.idea/
 /venv/
+/app/db.
+/app/wounddetection/model/model.pkl
