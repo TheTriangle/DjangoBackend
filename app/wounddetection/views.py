@@ -15,21 +15,22 @@ from .serializers import PatientSerializer, DoctorSerializer
 class CasesView(generics.ListCreateAPIView):
     serializer_class = serializers.CasePostSerializer
     queryset = Case.objects.all()
+    case = None
 
     def perform_create(self, serializer):
-        case = serializer.save()
+        self.case = serializer.save()
 
         patient_id = self.request.data.get('patient')
 
         patient = Patient.objects.get(id=patient_id)
 
-        patient.cases.add(case)
+        patient.cases.add(self.case)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializers.CaseSerializer(self.case).data, status=status.HTTP_201_CREATED)
 
 
 net = Model()
